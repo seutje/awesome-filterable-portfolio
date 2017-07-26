@@ -679,6 +679,23 @@ function afp_options_page(){
                     <?php _e('This option specifies where the Project Link for a Portfolio Item should be open.', 'awesome-filterable-portfolio'); ?>
                     </span></td>
                 </tr>
+                <tr>
+                  <td style="width:140px;" valign="top"><b>
+                    <?php _e('Image Links open in:', 'awesome-filterable-portfolio'); ?>
+                    </b></td>
+                  <td><select name="project_link" id="project_link">
+                      <option value="colorbox" <?php if($afpOptions['image_link']=='colorbox'){ echo('selected'); } ?>>
+                      <?php _e('Modal window', 'awesome-filterable-portfolio'); ?>
+                      </option>
+                      <option value="blank" <?php if($afpOptions['image_link']=='blank'){ echo('selected'); } ?>>
+                      <?php _e('New Tab / Window', 'awesome-filterable-portfolio'); ?>
+                      </option>
+                    </select>
+                    <br />
+                    <span class="description">
+                    <?php _e('This option specifies where the Image Link for a Portfolio Item should be open.', 'awesome-filterable-portfolio'); ?>
+                    </span></td>
+                </tr>
               </table>
               <br />
               <table cellpadding="3">
@@ -1019,6 +1036,8 @@ function afp_shortcode(){
 	$cats = $wpdb->get_results('SELECT * FROM ' . $wpdb->prefix . 'afp_categories' . $orderby);
 	?>
 <?php 
+    // Not sure if this is necessary
+    $afpOptions = get_option('afpOptions');
 		//AFP Main Container
 		$output='<div class="afp-clear"></div>
 		<div id="afp-container">';
@@ -1036,8 +1055,14 @@ function afp_shortcode(){
         $output.='<ul class="afp-items">';
         $k = 1;
         foreach ($items as $item ){
-            	$output.='<li class="afp-single-item" data-id="id-' . $k . '" data-type="' . ereg_replace("[^A-Za-z0-9]", "", $item->item_category) .'">
-                <a class="colorbox" title="' . $item->item_description . '" href="' . $item->item_image . '"><img alt="" class="img-link-initial" src="' . $item->item_thumbnail . '"></a><br />
+            	$output.='<li class="afp-single-item" data-id="id-' . $k . '" data-type="' . ereg_replace("[^A-Za-z0-9]", "", $item->item_category) .'">';
+              if ($afpOptions['image_link'] == 'colorbox') {
+                $output .=  '<a class="colorbox" title="' . $item->item_description . '" href="' . $item->item_image . '"><img alt="" class="img-link-initial" src="' . $item->item_thumbnail . '"></a>';
+              }
+              else {
+                $output .=  '<a target="_blank" title="' . $item->item_description . '" href="' . $item->item_image . '"><img alt="" class="img-link-initial" src="' . $item->item_thumbnail . '"></a>';
+              }
+              $output .= '<br />
                 <ul class="afp-item-details">';
                     if($item->item_title != null) { $output.='<li><strong>' . $item->item_title . '</strong></li>'; }
 					if($item->item_client != null) { $output.='<li>' . $item->item_client . '</li>'; }
